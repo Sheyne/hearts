@@ -3,30 +3,30 @@ import typing
 from random import shuffle
 
 
-def choose_random(hand, stack):
-    valid = hearts.valid_moves(hand, stack)
+def choose_random(hand: typing.List[hearts.Card], stacks: typing.List[typing.List[hearts.Card]]) -> hearts.Card:
+    valid = hearts.valid_moves(hand, stacks)
     shuffle(valid)
     return valid[0]
 
-def choose_human(hand, stack):
-    print(f"stack: {hearts.str_hand(stack, sort=False)}")
+def choose_human(hand: typing.List[hearts.Card], stacks: typing.List[typing.List[hearts.Card]]) -> hearts.Card:
+    print(f"stack: {hearts.str_hand(stacks[-1], sort=False)}")
     print(f"hand: {hearts.str_hand(hand)}")
-    valid = set(hearts.valid_moves(hand, stack))
+    valid: typing.Set[hearts.Card] = set(hearts.valid_moves(hand, stacks))
     card = None
 
     while card not in valid:
-        *n, s = input("choice (5H): ").upper()
-        s = hearts.suit_order.index(s)
-        n = hearts.cards.index("".join(n))
+        *n_strs, s_str = input("choice (5H): ").upper()
+        s = hearts.suit_order.index(s_str)
+        n = hearts.cards.index("".join(n_strs))
         card = hearts.Card(s, n)
     
-    return card
+    return typing.cast(hearts.Card, card)
 
 hands = list(zip(hearts.deal(), [choose_human, choose_random, choose_random, choose_random]))
 
-stacks = []
+stacks: typing.List[typing.List[hearts.Card]] = []
 starting_player = 0
-piles = [[], [], [], []]
+piles: typing.List[typing.List[hearts.Card]] = [[], [], [], []]
 while len(hands[0][0]) > 0:
     stacks.append([])
     max_play_idx = 0
@@ -35,7 +35,7 @@ while len(hands[0][0]) > 0:
     for play_idx, player_idx in enumerate(range(starting_player, starting_player + 4)):
         player_idx = player_idx % 4
         hand, chooser = hands[player_idx]
-        choice = chooser(hand, stacks[-1])
+        choice = chooser(hand, stacks)
         print(f"player {player_idx}: {hearts.str_hand([choice])}")
         hearts.play(hand, choice, stacks)
         if choice.suit == stacks[-1][0].suit:
