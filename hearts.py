@@ -31,12 +31,25 @@ def score(pile: typing.List[Card]) -> int:
         (13 if card == queen_spades else 0)
             for card in pile)
 
+def is_point_card(card: Card) -> bool:
+    return card.suit == hearts or card == queen_spades
+
 def valid_moves(hand: typing.List[Card], stacks: typing.List[typing.List[Card]]) -> typing.List[Card]:
     stack = stacks[-1]
     if len(stack) == 0:
-        return hand
+        points_broken = any(is_point_card(card)
+                            for stack in stacks
+                                for card in stack)
+        if points_broken:
+            return hand
+        else:
+            return [card for card in hand if not is_point_card(card)]
     ret = [card for card in hand if card.suit == stack[0].suit]
     if len(ret) == 0:
+        if len(stacks) == 1:
+            non_point_cards = [card for card in hand if not is_point_card(card)]
+            if non_point_cards:
+                return non_point_cards
         return hand
     return ret
 
