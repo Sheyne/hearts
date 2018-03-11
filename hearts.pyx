@@ -1,5 +1,5 @@
 import typing
-from random import shuffle
+from cyrandom import shuffle
 
 T = typing.TypeVar('T')
 
@@ -43,7 +43,10 @@ def valid_moves(hand: typing.List[Card], stacks: typing.List[typing.List[Card]])
         if points_broken:
             return hand
         else:
-            return [card for card in hand if not is_point_card(card)]
+            non_point_cards = [card for card in hand if not is_point_card(card)]
+            if non_point_cards:
+                return non_point_cards
+            return hand
     ret = [card for card in hand if card.suit == stack[0].suit]
     if len(ret) == 0:
         if len(stacks) == 1:
